@@ -1,0 +1,62 @@
+name: Build AOM AV1 Lavish
+
+on:
+  # Triggers the workflow on push or pull request to the main branch
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Install dependencies
+      - name: Install required tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            cmake \
+            git \
+            perl \
+            yasm \
+            doxygen \
+            ninja-build \
+            python3
+
+      # Step 3: Verify CMake version (Check minimum required version from CMakeLists.txt)
+      - name: Check CMake version
+        run: cmake --version
+
+      # Step 4: Create build directory
+      - name: Create build directory
+        run: mkdir -p build
+
+      # Step 5: Configure project with CMake
+      - name: Configure project with CMake
+        working-directory: build
+        run: cmake .. -GNinja
+
+      # Step 6: Build the project
+      - name: Build the project
+        working-directory: build
+        run: cmake --build .
+
+      # Step 7: Optionally run tests (if any)
+      # Uncomment the following step if there are tests defined
+      # - name: Run tests
+      #   working-directory: build
+      #   run: ctest --output-on-failure
+
+      # Step 8: Optionally build documentation (if doxygen is enabled)
+      # Uncomment if documentation is needed
+      # - name: Build documentation
+      #   run: doxygen Doxyfile
